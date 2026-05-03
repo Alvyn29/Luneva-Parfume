@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -11,6 +11,22 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function App() {
+
+  // ===== DATA (PROPS SOURCE) =====
+  const products = [
+    {
+      id: 1,
+      name: 'Luneva Rose',
+      price: 'Rp 350K',
+      image: 'https://images.unsplash.com/photo-1615634260167-c8cdede054de',
+    },
+    {
+      id: 2,
+      name: 'Midnight Oud',
+      price: 'Rp 500K',
+      image: 'https://images.unsplash.com/photo-1594035910387-fea47794261f',
+    },
+  ];
 
   return (
     <SafeAreaView style={styles.container}>
@@ -40,40 +56,9 @@ export default function App() {
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             
-            {/* CARD 1 */}
-            <View style={styles.card}>
-              <Image
-                source={{ uri: 'https://images.unsplash.com/photo-1615634260167-c8cdede054de' }}
-                style={styles.cardImage}
-              />
-              <Text style={styles.cardTitle}>Luneva Rose</Text>
-              <Text style={styles.price}>Rp 350K</Text>
-
-              {/* tombol interaksi */}
-              <TouchableOpacity
-                style={styles.button}
-                onPress={() => alert('Luneva Rose dipilih')} // fungsi klik
-              >
-                <Text style={styles.buttonText}>View</Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* CARD 2 */}
-            <View style={styles.card}>
-              <Image
-                source={{ uri: 'https://images.unsplash.com/photo-1594035910387-fea47794261f' }}
-                style={styles.cardImage}
-              />
-              <Text style={styles.cardTitle}>Midnight Oud</Text>
-              <Text style={styles.price}>Rp 500K</Text>
-
-              <TouchableOpacity
-                style={styles.button}
-                onPress={() => alert('Midnight Oud dipilih')} // fungsi klik
-              >
-                <Text style={styles.buttonText}>View</Text>
-              </TouchableOpacity>
-            </View>
+            {products.map((item) => (
+              <ProductCard key={item.id} item={item} />
+            ))}
 
           </ScrollView>
         </View>
@@ -84,7 +69,7 @@ export default function App() {
 
           <View style={styles.listItem}>
             <Image
-              source={{ uri: 'https://images.unsplash.com/photo-1543422655-ac1c6ca993ed?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' }}
+              source={{ uri: 'https://images.unsplash.com/photo-1543422655-ac1c6ca993ed' }}
               style={styles.listImage}
             />
             <View>
@@ -100,10 +85,42 @@ export default function App() {
   );
 }
 
+//
+// ===== COMPONENT (PROPS + STATE) =====
+//
+function ProductCard({ item }) {
+
+  // STATE → interaksi favorit
+  const [favorite, setFavorite] = useState(false);
+
+  return (
+    <View style={styles.card}>
+      <Image source={{ uri: item.image }} style={styles.cardImage} />
+
+      {/* PROPS */}
+      <Text style={styles.cardTitle}>{item.name}</Text>
+      <Text style={styles.price}>{item.price}</Text>
+
+      {/* STATE */}
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => setFavorite(!favorite)}
+      >
+        <Text style={styles.buttonText}>
+          {favorite ? '❤️ Favorit' : '🤍 Favorit'}
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+//
+// ===== STYLES (INI YANG TADI BIKIN ERROR) =====
+//
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF', // putih clean
+    backgroundColor: '#FFFFFF',
   },
 
   header: {
@@ -144,13 +161,11 @@ const styles = StyleSheet.create({
   },
 
   card: {
-    backgroundColor: '#F7F7F7', // abu soft
+    backgroundColor: '#F7F7F7',
     marginLeft: 20,
     borderRadius: 15,
     padding: 10,
     width: 150,
-
-    // shadow biar elegan
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 5,
@@ -170,7 +185,7 @@ const styles = StyleSheet.create({
   },
 
   price: {
-    color: '#D4AF37', // gold accent
+    color: '#D4AF37',
     marginVertical: 3,
     fontWeight: '600',
   },
@@ -196,7 +211,6 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     padding: 10,
     alignItems: 'center',
-
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 5,
