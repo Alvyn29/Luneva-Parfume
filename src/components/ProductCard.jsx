@@ -1,27 +1,49 @@
 import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 
-export default function ProductCard({ item }) {
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
 
-  // STATE untuk menyimpan status favorit
+export default function ProductCard({ item, navigation }) {
+
   const [favorite, setFavorite] = useState(false);
 
   return (
     <View style={styles.card}>
 
-      {/* PROPS: ambil data dari parent */}
-      <Image source={{ uri: item.image }} style={styles.image} />
+      <Image
+        source={{ uri: item.image }}
+        style={styles.image}
+      />
 
-      <Text style={styles.name}>{item.name}</Text>
-      <Text style={styles.price}>{item.price}</Text>
+      <Text style={styles.title}>
+        {item.name}
+      </Text>
 
-      {/* STATE: tombol interaksi */}
+      <Text style={styles.price}>
+        {item.price}
+      </Text>
+
       <TouchableOpacity
         style={styles.button}
-        onPress={() => setFavorite(!favorite)} // ubah state
+        onPress={() =>
+          navigation.navigate('Detail', { product: item })
+        }
       >
-        <Text style={{ color: 'white' }}>
-          {favorite ? '❤️ Favorited' : '🤍 Add Favorite'}
+        <Text style={styles.buttonText}>
+          View Detail
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={() => setFavorite(!favorite)}
+      >
+        <Text style={styles.favorite}>
+          {favorite ? '❤️ Favorited' : '🤍 Favorite'}
         </Text>
       </TouchableOpacity>
 
@@ -30,29 +52,54 @@ export default function ProductCard({ item }) {
 }
 
 const styles = StyleSheet.create({
+
   card: {
-    backgroundColor: '#F7F7F7',
-    padding: 10,
-    borderRadius: 15,
-    margin: 10,
+    width: 170,
+    backgroundColor: '#FFF',
+    borderRadius: 20,
+    padding: 12,
+    marginRight: 15,
+
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 4,
   },
+
   image: {
     width: '100%',
-    height: 120,
-    borderRadius: 10,
+    height: 150,
+    borderRadius: 15,
   },
-  name: {
+
+  title: {
+    marginTop: 10,
     fontWeight: 'bold',
-    marginTop: 5,
+    fontSize: 16,
   },
+
   price: {
-    color: '#D4AF37',
-  },
-  button: {
-    backgroundColor: '#0F0F0F',
-    padding: 8,
-    borderRadius: 10,
     marginTop: 5,
+    color: '#D4AF37',
+    fontWeight: 'bold',
+  },
+
+  button: {
+    backgroundColor: '#111',
+    padding: 10,
+    borderRadius: 12,
+    marginTop: 10,
     alignItems: 'center',
   },
+
+  buttonText: {
+    color: '#FFF',
+    fontWeight: 'bold',
+  },
+
+  favorite: {
+    marginTop: 10,
+    textAlign: 'center',
+  },
+
 });
