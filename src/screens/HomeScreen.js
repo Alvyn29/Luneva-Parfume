@@ -1,11 +1,10 @@
-import React from 'react';
+import React, { useRef } from 'react';
 
 import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
-  Image,
+  Animated,
 } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,7 +13,36 @@ import ProductCard from '../components/ProductCard';
 
 export default function HomeScreen({ navigation }) {
 
+  const scrollY = useRef(new Animated.Value(0)).current;
+
+  // ===== ANIMATION =====
+  const logoScale = scrollY.interpolate({
+    inputRange: [0, 120],
+    outputRange: [1, 0.8],
+    extrapolate: 'clamp',
+  });
+
+  const taglineOpacity = scrollY.interpolate({
+    inputRange: [0, 80],
+    outputRange: [1, 0],
+    extrapolate: 'clamp',
+  });
+
+  const bannerOpacity = scrollY.interpolate({
+    inputRange: [0, 150],
+    outputRange: [1, 0.3],
+    extrapolate: 'clamp',
+  });
+
+  const bannerTranslate = scrollY.interpolate({
+    inputRange: [0, 150],
+    outputRange: [0, -20],
+    extrapolate: 'clamp',
+  });
+
+  // ===== PRODUCT =====
   const products = [
+
     {
       id: 1,
       name: 'Luneva Rose',
@@ -41,7 +69,7 @@ export default function HomeScreen({ navigation }) {
 
     {
       id: 4,
-      name: 'Luneva Essence ',
+      name: 'Luneva Gold',
       price: 'Rp 450K',
       image:
         'https://images.unsplash.com/photo-1523293182086-7651a899d37f?q=80&w=800',
@@ -52,42 +80,86 @@ export default function HomeScreen({ navigation }) {
       name: 'Luneva Bloom',
       price: 'Rp 400K',
       image:
-        'https://images.unsplash.com/photo-1593487568720-92097fb460fb?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        'https://images.unsplash.com/photo-1593487568720-92097fb460fb?q=80&w=1170&auto=format&fit=crop',
     },
+
   ];
 
   return (
     <SafeAreaView style={styles.container}>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
+      {/* ===== HEADER ===== */}
+      <View style={styles.header}>
 
-        <View style={styles.header}>
+        <Animated.Text
+          style={[
+            styles.brand,
+            {
+              transform: [{ scale: logoScale }],
+            },
+          ]}
+        >
+          LUNEVA
+        </Animated.Text>
 
-          <Text style={styles.brand}>
-            LUNEVA
-          </Text>
+        <Animated.Text
+          style={[
+            styles.tagline,
+            {
+              opacity: taglineOpacity,
+            },
+          ]}
+        >
+          Luxury Fragrance Collection
+        </Animated.Text>
 
-          <Text style={styles.tagline}>
-            Where Elegance Meets Fragrance
-          </Text>
+      </View>
 
-        </View>
+      {/* ===== CONTENT ===== */}
+      <Animated.ScrollView
+        showsVerticalScrollIndicator={false}
 
-        <Image
+        contentContainerStyle={{
+          paddingTop: 140,
+          paddingBottom: 30,
+        }}
+
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: false }
+        )}
+
+        scrollEventThrottle={16}
+      >
+
+        {/* ===== BANNER ===== */}
+        <Animated.Image
           source={{
             uri:
               'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?q=80&w=1200',
           }}
-          style={styles.banner}
+
+          style={[
+            styles.banner,
+            {
+              opacity: bannerOpacity,
+              transform: [{ translateY: bannerTranslate }],
+            },
+          ]}
         />
 
         <Text style={styles.sectionTitle}>
           Best Seller
         </Text>
 
-        <ScrollView
+        {/* ===== PRODUCT ===== */}
+        <Animated.ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{
+            paddingLeft: 20,
+            paddingRight: 10,
+          }}
         >
 
           {products.map((item) => (
@@ -98,9 +170,9 @@ export default function HomeScreen({ navigation }) {
             />
           ))}
 
-        </ScrollView>
+        </Animated.ScrollView>
 
-      </ScrollView>
+      </Animated.ScrollView>
 
     </SafeAreaView>
   );
@@ -110,38 +182,66 @@ const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    backgroundColor: '#FFF',
+    backgroundColor: '#F8F8F8',
   },
 
+  // ===== HEADER =====
   header: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+
+    zIndex: 999,
+
+    backgroundColor: 'rgba(255,255,255,0.97)',
+
+    paddingTop: 45,
+    paddingBottom: 18,
+
     alignItems: 'center',
-    marginTop: 15,
+
+    borderBottomLeftRadius: 25,
+    borderBottomRightRadius: 25,
+
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 10,
   },
 
+  // ===== BRAND =====
   brand: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: 'bold',
-    letterSpacing: 4,
+    letterSpacing: 6,
+    color: '#111',
   },
 
+  // ===== TAGLINE =====
   tagline: {
-    color: '#777',
+    color: '#888',
     marginTop: 5,
+    fontSize: 13,
+    letterSpacing: 1,
   },
 
+  // ===== BANNER =====
   banner: {
     width: '90%',
-    height: 220,
-    borderRadius: 25,
+    height: 240,
+    borderRadius: 30,
     alignSelf: 'center',
-    marginTop: 20,
   },
 
+  // ===== SECTION =====
   sectionTitle: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
     marginLeft: 20,
-    marginVertical: 20,
+    marginTop: 30,
+    marginBottom: 20,
+    color: '#111',
   },
 
 });
