@@ -6,48 +6,106 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
+  Modal,
 } from 'react-native';
 
 export default function ProductCard({ item, navigation }) {
 
   const [favorite, setFavorite] = useState(false);
 
+  const [modalVisible, setModalVisible] = useState(false);
+
   return (
-    <View style={styles.card}>
+    <>
+      {/* CARD */}
+      <View style={styles.card}>
 
-      <Image
-        source={{ uri: item.image }}
-        style={styles.image}
-      />
+        {/* IMAGE */}
+        <TouchableOpacity
+          onPress={() => setModalVisible(true)}
+        >
+          <Image
+            source={{ uri: item.image }}
+            style={styles.image}
+          />
+        </TouchableOpacity>
 
-      <Text style={styles.title}>
-        {item.name}
-      </Text>
-
-      <Text style={styles.price}>
-        {item.price}
-      </Text>
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() =>
-          navigation.navigate('Detail', { product: item })
-        }
-      >
-        <Text style={styles.buttonText}>
-          View Detail
+        <Text style={styles.title}>
+          {item.name}
         </Text>
-      </TouchableOpacity>
 
-      <TouchableOpacity
-        onPress={() => setFavorite(!favorite)}
-      >
-        <Text style={styles.favorite}>
-          {favorite ? '❤️ Favorited' : '🤍 Favorite'}
+        <Text style={styles.price}>
+          {item.price}
         </Text>
-      </TouchableOpacity>
 
-    </View>
+        {/* DETAIL BUTTON */}
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() =>
+            navigation.navigate('Detail', {
+              product: item,
+            })
+          }
+        >
+          <Text style={styles.buttonText}>
+            View Detail
+          </Text>
+        </TouchableOpacity>
+
+        {/* FAVORITE */}
+        <TouchableOpacity
+          onPress={() => setFavorite(!favorite)}
+        >
+          <Text style={styles.favorite}>
+            {favorite ? '❤️ Favorited' : '🤍 Favorite'}
+          </Text>
+        </TouchableOpacity>
+
+      </View>
+
+      {/* MODAL POPUP */}
+      <Modal
+        visible={modalVisible}
+        transparent={true}
+        animationType="fade"
+      >
+
+        <View style={styles.modalContainer}>
+
+          <View style={styles.modalContent}>
+
+            <Image
+              source={{ uri: item.image }}
+              style={styles.modalImage}
+            />
+
+            <Text style={styles.modalTitle}>
+              {item.name}
+            </Text>
+
+            <Text style={styles.modalPrice}>
+              {item.price}
+            </Text>
+
+            <Text style={styles.modalDesc}>
+              Premium fragrance with elegant and luxury aroma.
+            </Text>
+
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.closeText}>
+                Close
+              </Text>
+            </TouchableOpacity>
+
+          </View>
+
+        </View>
+
+      </Modal>
+    </>
   );
 }
 
@@ -100,6 +158,61 @@ const styles = StyleSheet.create({
   favorite: {
     marginTop: 10,
     textAlign: 'center',
+  },
+
+  /* ===== MODAL ===== */
+
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  modalContent: {
+    width: '85%',
+    backgroundColor: '#FFF',
+    borderRadius: 25,
+    padding: 20,
+  },
+
+  modalImage: {
+    width: '100%',
+    height: 250,
+    borderRadius: 20,
+  },
+
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginTop: 15,
+  },
+
+  modalPrice: {
+    color: '#D4AF37',
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginTop: 5,
+  },
+
+  modalDesc: {
+    marginTop: 10,
+    color: '#666',
+    lineHeight: 22,
+  },
+
+  closeButton: {
+    backgroundColor: '#111',
+    padding: 14,
+    borderRadius: 15,
+    marginTop: 20,
+    alignItems: 'center',
+  },
+
+  closeText: {
+    color: '#FFF',
+    fontWeight: 'bold',
   },
 
 });

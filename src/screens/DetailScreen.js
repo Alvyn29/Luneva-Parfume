@@ -10,7 +10,11 @@ import {
 
 export default function DetailScreen({ route, navigation }) {
 
-  const { product } = route.params;
+  const product = route?.params?.product;
+
+  if (!product) {
+    return null;
+  }
 
   return (
     <View style={styles.container}>
@@ -41,7 +45,11 @@ export default function DetailScreen({ route, navigation }) {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => navigation.navigate('Profile')}
+          onPress={() =>
+  navigation.navigate('Main', {
+    screen: 'Profile',
+  })
+}
         >
           <Text style={styles.profileLink}>
             Go To Profile

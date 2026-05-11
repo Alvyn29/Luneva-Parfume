@@ -12,9 +12,12 @@ import {
 export default function ProfileScreen() {
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      showsVerticalScrollIndicator={false}
+    >
 
-      {/* ===== HEADER PROFILE ===== */}
+      {/* ===== HEADER ===== */}
       <View style={styles.header}>
 
         <Image
@@ -37,12 +40,17 @@ export default function ProfileScreen() {
       {/* ===== MEMBERSHIP CARD ===== */}
       <View style={styles.membershipCard}>
 
+        <Text style={styles.membershipLabel}>
+          PREMIUM MEMBERSHIP
+        </Text>
+
         <Text style={styles.membershipTitle}>
-          Gold Member
+          Gold Member ✨
         </Text>
 
         <Text style={styles.membershipText}>
-          Enjoy exclusive perfume collections and special discounts.
+          Enjoy exclusive luxury perfume collections,
+          special discounts, and premium services.
         </Text>
 
       </View>
@@ -51,54 +59,72 @@ export default function ProfileScreen() {
       <View style={styles.menuContainer}>
 
         <TouchableOpacity style={styles.menuItem}>
-          <Text style={styles.menuIcon}>🛍️</Text>
+
+          <View style={styles.iconBox}>
+            <Text style={styles.menuIcon}>🛍️</Text>
+          </View>
 
           <Text style={styles.menuText}>
             Order History
           </Text>
+
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.menuItem}>
-          <Text style={styles.menuIcon}>❤️</Text>
+
+          <View style={styles.iconBox}>
+            <Text style={styles.menuIcon}>❤️</Text>
+          </View>
 
           <Text style={styles.menuText}>
             Favorite Products
           </Text>
+
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.menuItem}>
-          <Text style={styles.menuIcon}>📍</Text>
+
+          <View style={styles.iconBox}>
+            <Text style={styles.menuIcon}>📍</Text>
+          </View>
 
           <Text style={styles.menuText}>
             Shipping Address
           </Text>
+
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.menuItem}>
-          <Text style={styles.menuIcon}>⚙️</Text>
+
+          <View style={styles.iconBox}>
+            <Text style={styles.menuIcon}>⚙️</Text>
+          </View>
 
           <Text style={styles.menuText}>
             Settings
           </Text>
+
         </TouchableOpacity>
 
       </View>
 
-      {/* ===== PROMO CARD ===== */}
+      {/* ===== PROMO ===== */}
       <View style={styles.promoCard}>
 
         <Text style={styles.promoTitle}>
-          Special Offer ✨
+          Special Offer 🎁
         </Text>
 
         <Text style={styles.promoText}>
-          Get 20% discount for your next luxury fragrance purchase.
+          Get 20% OFF for your next luxury fragrance purchase.
         </Text>
 
         <TouchableOpacity style={styles.promoButton}>
+
           <Text style={styles.promoButtonText}>
             Claim Now
           </Text>
+
         </TouchableOpacity>
 
       </View>
@@ -111,12 +137,13 @@ const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F8F8F8',
   },
 
   header: {
     alignItems: 'center',
-    marginTop: 60,
+    marginTop: 40,
+    paddingBottom: 20,
   },
 
   profileImage: {
@@ -128,36 +155,44 @@ const styles = StyleSheet.create({
   },
 
   name: {
-    fontSize: 26,
+    fontSize: 28,
     fontWeight: 'bold',
-    marginTop: 15,
     color: '#111',
+    marginTop: 15,
   },
 
   email: {
     color: '#777',
     marginTop: 5,
-    fontSize: 14,
+    fontSize: 15,
   },
 
   membershipCard: {
     backgroundColor: '#111',
     marginHorizontal: 20,
-    marginTop: 30,
-    borderRadius: 25,
+    marginTop: 15,
+    borderRadius: 28,
     padding: 25,
+  },
+
+  membershipLabel: {
+    color: '#AAA',
+    fontSize: 12,
+    letterSpacing: 2,
   },
 
   membershipTitle: {
     color: '#D4AF37',
-    fontSize: 22,
+    fontSize: 26,
     fontWeight: 'bold',
+    marginTop: 8,
   },
 
   membershipText: {
     color: '#EEE',
-    marginTop: 10,
-    lineHeight: 22,
+    marginTop: 12,
+    lineHeight: 24,
+    fontSize: 15,
   },
 
   menuContainer: {
@@ -166,22 +201,33 @@ const styles = StyleSheet.create({
   },
 
   menuItem: {
-    backgroundColor: '#F8F8F8',
+    backgroundColor: '#FFF',
     padding: 18,
-    borderRadius: 18,
+    borderRadius: 20,
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 15,
 
     shadowColor: '#000',
     shadowOpacity: 0.05,
-    shadowRadius: 5,
-    elevation: 2,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+
+  iconBox: {
+    width: 45,
+    height: 45,
+    backgroundColor: '#F5F5F5',
+    borderRadius: 12,
+
+    justifyContent: 'center',
+    alignItems: 'center',
+
+    marginRight: 15,
   },
 
   menuIcon: {
     fontSize: 20,
-    marginRight: 15,
   },
 
   menuText: {
@@ -193,28 +239,29 @@ const styles = StyleSheet.create({
   promoCard: {
     backgroundColor: '#D4AF37',
     margin: 20,
-    borderRadius: 25,
+    borderRadius: 28,
     padding: 25,
     marginBottom: 40,
   },
 
   promoTitle: {
     color: '#FFF',
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: 'bold',
   },
 
   promoText: {
     color: '#FFF',
     marginTop: 10,
-    lineHeight: 22,
+    lineHeight: 24,
+    fontSize: 15,
   },
 
   promoButton: {
     backgroundColor: '#111',
-    paddingVertical: 12,
-    borderRadius: 15,
-    marginTop: 20,
+    paddingVertical: 14,
+    borderRadius: 16,
+    marginTop: 25,
     alignItems: 'center',
   },
 

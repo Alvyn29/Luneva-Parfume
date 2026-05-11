@@ -15,46 +15,46 @@ import ProductCard from '../components/ProductCard';
 export default function HomeScreen({ navigation }) {
 
   const products = [
-  {
-    id: 1,
-    name: 'Luneva Rose',
-    price: 'Rp 350K',
-    image:
-      'https://images.unsplash.com/photo-1615634260167-c8cdede054de?q=80&w=800',
-  },
+    {
+      id: 1,
+      name: 'Luneva Rose',
+      price: 'Rp 350K',
+      image:
+        'https://images.unsplash.com/photo-1615634260167-c8cdede054de?q=80&w=800',
+    },
 
-  {
-    id: 2,
-    name: 'Midnight Oud',
-    price: 'Rp 500K',
-    image:
-      'https://images.unsplash.com/photo-1594035910387-fea47794261f?q=80&w=800',
-  },
+    {
+      id: 2,
+      name: 'Luneva Oud',
+      price: 'Rp 500K',
+      image:
+        'https://images.unsplash.com/photo-1594035910387-fea47794261f?q=80&w=800',
+    },
 
-  {
-    id: 3,
-    name: 'Ocean Breeze',
-    price: 'Rp 300K',
-    image:
-      'https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=800',
-  },
+    {
+      id: 3,
+      name: 'Luneva Breeze',
+      price: 'Rp 300K',
+      image:
+        'https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=800',
+    },
 
-  {
-    id: 4,
-    name: 'Golden Essence',
-    price: 'Rp 450K',
-    image:
-      'https://images.unsplash.com/photo-1523293182086-7651a899d37f?q=80&w=800',
-  },
+    {
+      id: 4,
+      name: 'Luneva Essence ',
+      price: 'Rp 450K',
+      image:
+        'https://images.unsplash.com/photo-1523293182086-7651a899d37f?q=80&w=800',
+    },
 
-  {
-    id: 5,
-    name: 'Velvet Bloom',
-    price: 'Rp 400K',
-    image:
-      'https://images.unsplash.com/photo-1593487568720-92097fb460fb?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  },
-];
+    {
+      id: 5,
+      name: 'Luneva Bloom',
+      price: 'Rp 400K',
+      image:
+        'https://images.unsplash.com/photo-1593487568720-92097fb460fb?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    },
+  ];
 
   return (
     <SafeAreaView style={styles.container}>
@@ -62,11 +62,15 @@ export default function HomeScreen({ navigation }) {
       <ScrollView showsVerticalScrollIndicator={false}>
 
         <View style={styles.header}>
-          <Text style={styles.brand}>LUNEVA</Text>
+
+          <Text style={styles.brand}>
+            LUNEVA
+          </Text>
 
           <Text style={styles.tagline}>
             Where Elegance Meets Fragrance
           </Text>
+
         </View>
 
         <Image
@@ -81,7 +85,10 @@ export default function HomeScreen({ navigation }) {
           Best Seller
         </Text>
 
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+        >
 
           {products.map((item) => (
             <ProductCard
