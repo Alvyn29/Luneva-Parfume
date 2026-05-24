@@ -1,4 +1,8 @@
-import React, { useRef } from 'react';
+import React, {
+  useRef,
+  useEffect,
+  useState,
+} from 'react';
 
 import {
   View,
@@ -7,44 +11,79 @@ import {
   Animated,
 } from 'react-native';
 
+import axios from 'axios';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import ProductCard from '../components/ProductCard';
 
 export default function HomeScreen({ navigation }) {
 
-  const scrollY = useRef(new Animated.Value(0)).current;
+  // ===== API =====
+  const API =
+    'https://6a12f33078d0434e0d5da850.mockapi.io/Parfume';
+
+  const [apiProducts, setApiProducts] =
+    useState([]);
+
+  // ===== GET API =====
+  const getApiProducts = async () => {
+
+    try {
+
+      const response =
+        await axios.get(API);
+
+      setApiProducts(response.data);
+
+    } catch (error) {
+
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+
+    getApiProducts();
+
+  }, []);
 
   // ===== ANIMATION =====
+  const scrollY =
+    useRef(new Animated.Value(0)).current;
+
   const logoScale = scrollY.interpolate({
     inputRange: [0, 120],
     outputRange: [1, 0.8],
     extrapolate: 'clamp',
   });
 
-  const taglineOpacity = scrollY.interpolate({
-    inputRange: [0, 80],
-    outputRange: [1, 0],
-    extrapolate: 'clamp',
-  });
+  const taglineOpacity =
+    scrollY.interpolate({
+      inputRange: [0, 80],
+      outputRange: [1, 0],
+      extrapolate: 'clamp',
+    });
 
-  const bannerOpacity = scrollY.interpolate({
-    inputRange: [0, 150],
-    outputRange: [1, 0.3],
-    extrapolate: 'clamp',
-  });
+  const bannerOpacity =
+    scrollY.interpolate({
+      inputRange: [0, 150],
+      outputRange: [1, 0.3],
+      extrapolate: 'clamp',
+    });
 
-  const bannerTranslate = scrollY.interpolate({
-    inputRange: [0, 150],
-    outputRange: [0, -20],
-    extrapolate: 'clamp',
-  });
+  const bannerTranslate =
+    scrollY.interpolate({
+      inputRange: [0, 150],
+      outputRange: [0, -20],
+      extrapolate: 'clamp',
+    });
 
-  // ===== PRODUCT =====
-  const products = [
+  // ===== DEFAULT PRODUCT =====
+  const defaultProducts = [
 
     {
-      id: 1,
+      id: 'default1',
       name: 'Luneva Rose',
       price: 'Rp 350K',
       image:
@@ -52,7 +91,7 @@ export default function HomeScreen({ navigation }) {
     },
 
     {
-      id: 2,
+      id: 'default2',
       name: 'Luneva Oud',
       price: 'Rp 500K',
       image:
@@ -60,7 +99,7 @@ export default function HomeScreen({ navigation }) {
     },
 
     {
-      id: 3,
+      id: 'default3',
       name: 'Luneva Breeze',
       price: 'Rp 300K',
       image:
@@ -68,7 +107,7 @@ export default function HomeScreen({ navigation }) {
     },
 
     {
-      id: 4,
+      id: 'default4',
       name: 'Luneva Gold',
       price: 'Rp 450K',
       image:
@@ -76,7 +115,7 @@ export default function HomeScreen({ navigation }) {
     },
 
     {
-      id: 5,
+      id: 'default5',
       name: 'Luneva Bloom',
       price: 'Rp 400K',
       image:
@@ -85,7 +124,13 @@ export default function HomeScreen({ navigation }) {
 
   ];
 
-  return (
+  // ===== COMBINE PRODUCT =====
+  const products = [
+    ...defaultProducts,
+    ...apiProducts,
+  ];
+
+    return (
     <SafeAreaView style={styles.container}>
 
       {/* ===== HEADER ===== */}
@@ -95,7 +140,9 @@ export default function HomeScreen({ navigation }) {
           style={[
             styles.brand,
             {
-              transform: [{ scale: logoScale }],
+              transform: [
+                { scale: logoScale },
+              ],
             },
           ]}
         >
@@ -106,7 +153,8 @@ export default function HomeScreen({ navigation }) {
           style={[
             styles.tagline,
             {
-              opacity: taglineOpacity,
+              opacity:
+                taglineOpacity,
             },
           ]}
         >
@@ -125,8 +173,18 @@ export default function HomeScreen({ navigation }) {
         }}
 
         onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: false }
+          [
+            {
+              nativeEvent: {
+                contentOffset: {
+                  y: scrollY,
+                },
+              },
+            },
+          ],
+          {
+            useNativeDriver: false,
+          }
         )}
 
         scrollEventThrottle={16}
@@ -142,12 +200,20 @@ export default function HomeScreen({ navigation }) {
           style={[
             styles.banner,
             {
-              opacity: bannerOpacity,
-              transform: [{ translateY: bannerTranslate }],
+              opacity:
+                bannerOpacity,
+
+              transform: [
+                {
+                  translateY:
+                    bannerTranslate,
+                },
+              ],
             },
           ]}
         />
 
+        {/* ===== TITLE ===== */}
         <Text style={styles.sectionTitle}>
           Best Seller
         </Text>
@@ -155,7 +221,10 @@ export default function HomeScreen({ navigation }) {
         {/* ===== PRODUCT ===== */}
         <Animated.ScrollView
           horizontal
-          showsHorizontalScrollIndicator={false}
+          showsHorizontalScrollIndicator={
+            false
+          }
+
           contentContainerStyle={{
             paddingLeft: 20,
             paddingRight: 10,
@@ -163,11 +232,13 @@ export default function HomeScreen({ navigation }) {
         >
 
           {products.map((item) => (
+
             <ProductCard
               key={item.id}
               item={item}
               navigation={navigation}
             />
+
           ))}
 
         </Animated.ScrollView>
@@ -188,13 +259,15 @@ const styles = StyleSheet.create({
   // ===== HEADER =====
   header: {
     position: 'absolute',
+
     top: 0,
     left: 0,
     right: 0,
 
     zIndex: 999,
 
-    backgroundColor: 'rgba(255,255,255,0.97)',
+    backgroundColor:
+      'rgba(255,255,255,0.97)',
 
     paddingTop: 45,
     paddingBottom: 18,
@@ -207,6 +280,7 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOpacity: 0.08,
     shadowRadius: 10,
+
     elevation: 10,
   },
 

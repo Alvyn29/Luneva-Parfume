@@ -1,5 +1,9 @@
 import React from 'react';
 
+import {
+  createMaterialTopTabNavigator,
+} from '@react-navigation/material-top-tabs';
+
 import { NavigationContainer } from '@react-navigation/native';
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -9,6 +13,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from './src/screens/HomeScreen';
 import DetailScreen from './src/screens/DetailScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
+import ApiScreen from './src/screens/ApiScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -40,6 +45,11 @@ function BottomTabs() {
       <Tab.Screen
         name="Home"
         component={HomeScreen}
+      />
+
+      <Tab.Screen
+       name="Collection"
+       component={ApiScreen}
       />
 
       <Tab.Screen

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import {
   View,
@@ -7,9 +7,73 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  TextInput,
+  Alert,
 } from 'react-native';
 
+import * as ImagePicker from 'expo-image-picker';
+
 export default function ProfileScreen() {
+
+  // ===== STATE =====
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  // ===== PROFILE =====
+  const [profileName, setProfileName] =
+    useState('Luneva Member');
+
+  const [profileImage, setProfileImage] =
+    useState(
+      'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'
+    );
+
+  // ===== PICK IMAGE =====
+  const pickImage = async () => {
+
+    const result =
+      await ImagePicker.launchImageLibraryAsync({
+
+        mediaTypes:
+          ImagePicker.MediaTypeOptions.Images,
+
+        allowsEditing: true,
+
+        aspect: [1, 1],
+
+        quality: 1,
+      });
+
+    if (!result.canceled) {
+
+      setProfileImage(
+        result.assets[0].uri
+      );
+    }
+  };
+
+  // ===== LOGIN =====
+  const handleLogin = () => {
+
+    if (!name || !email || !password) {
+
+      Alert.alert(
+        'Warning',
+        'Please fill all form fields.'
+      );
+
+      return;
+    }
+
+    // UPDATE PROFILE NAME
+    setProfileName(name);
+
+    Alert.alert(
+      'Success',
+      'Welcome to Luneva Parfume ✨'
+    );
+  };
 
   return (
     <ScrollView
@@ -20,112 +84,106 @@ export default function ProfileScreen() {
       {/* ===== HEADER ===== */}
       <View style={styles.header}>
 
-        <Image
-          source={{
-            uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png',
-          }}
-          style={styles.profileImage}
-        />
+        <TouchableOpacity
+          onPress={pickImage}
+        >
 
-        <Text style={styles.name}>
-          Luneva Customer
+          <Image
+            source={{
+              uri: profileImage,
+            }}
+            style={styles.profileImage}
+          />
+
+        </TouchableOpacity>
+
+        <Text style={styles.changePhoto}>
+          Change Photo
         </Text>
 
-        <Text style={styles.email}>
-          customer@luneva.com
+        <Text style={styles.name}>
+          {profileName}
+        </Text>
+
+        <Text style={styles.subtitle}>
+          Luxury Fragrance Experience
         </Text>
 
       </View>
 
-      {/* ===== MEMBERSHIP CARD ===== */}
-      <View style={styles.membershipCard}>
+      {/* ===== FORM ===== */}
+      <View style={styles.formCard}>
 
-        <Text style={styles.membershipLabel}>
-          PREMIUM MEMBERSHIP
+        <Text style={styles.formTitle}>
+          Member Login
         </Text>
 
+        {/* NAME */}
+        <Text style={styles.label}>
+          Full Name
+        </Text>
+
+        <TextInput
+          placeholder="Enter your name"
+          placeholderTextColor="#999"
+          style={styles.input}
+          value={name}
+          onChangeText={setName}
+        />
+
+        {/* EMAIL */}
+        <Text style={styles.label}>
+          Email
+        </Text>
+
+        <TextInput
+          placeholder="Enter your email"
+          placeholderTextColor="#999"
+          style={styles.input}
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+        />
+
+        {/* PASSWORD */}
+        <Text style={styles.label}>
+          Password
+        </Text>
+
+        <TextInput
+          placeholder="Enter your password"
+          placeholderTextColor="#999"
+          style={styles.input}
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
+
+        {/* BUTTON */}
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleLogin}
+        >
+
+          <Text style={styles.buttonText}>
+            Login
+          </Text>
+
+        </TouchableOpacity>
+
+      </View>
+
+      {/* ===== MEMBERSHIP ===== */}
+      <View style={styles.membershipCard}>
+
         <Text style={styles.membershipTitle}>
-          Gold Member ✨
+          Gold Membership ✨
         </Text>
 
         <Text style={styles.membershipText}>
-          Enjoy exclusive luxury perfume collections,
-          special discounts, and premium services.
+          Get exclusive access to luxury perfume collections
+          and premium member discounts.
         </Text>
-
-      </View>
-
-      {/* ===== MENU ===== */}
-      <View style={styles.menuContainer}>
-
-        <TouchableOpacity style={styles.menuItem}>
-
-          <View style={styles.iconBox}>
-            <Text style={styles.menuIcon}>🛍️</Text>
-          </View>
-
-          <Text style={styles.menuText}>
-            Order History
-          </Text>
-
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.menuItem}>
-
-          <View style={styles.iconBox}>
-            <Text style={styles.menuIcon}>❤️</Text>
-          </View>
-
-          <Text style={styles.menuText}>
-            Favorite Products
-          </Text>
-
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.menuItem}>
-
-          <View style={styles.iconBox}>
-            <Text style={styles.menuIcon}>📍</Text>
-          </View>
-
-          <Text style={styles.menuText}>
-            Shipping Address
-          </Text>
-
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.menuItem}>
-
-          <View style={styles.iconBox}>
-            <Text style={styles.menuIcon}>⚙️</Text>
-          </View>
-
-          <Text style={styles.menuText}>
-            Settings
-          </Text>
-
-        </TouchableOpacity>
-
-      </View>
-
-      {/* ===== PROMO ===== */}
-      <View style={styles.promoCard}>
-
-        <Text style={styles.promoTitle}>
-          Special Offer 🎁
-        </Text>
-
-        <Text style={styles.promoText}>
-          Get 20% OFF for your next luxury fragrance purchase.
-        </Text>
-
-        <TouchableOpacity style={styles.promoButton}>
-
-          <Text style={styles.promoButtonText}>
-            Claim Now
-          </Text>
-
-        </TouchableOpacity>
 
       </View>
 
@@ -140,10 +198,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8F8F8',
   },
 
+  // ===== HEADER =====
   header: {
     alignItems: 'center',
-    marginTop: 40,
-    paddingBottom: 20,
+    marginTop: 50,
   },
 
   profileImage: {
@@ -154,6 +212,12 @@ const styles = StyleSheet.create({
     borderColor: '#D4AF37',
   },
 
+  changePhoto: {
+    color: '#D4AF37',
+    marginTop: 10,
+    fontWeight: '600',
+  },
+
   name: {
     fontSize: 28,
     fontWeight: 'bold',
@@ -161,114 +225,78 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
 
-  email: {
+  subtitle: {
     color: '#777',
     marginTop: 5,
-    fontSize: 15,
   },
 
+  // ===== FORM =====
+  formCard: {
+    backgroundColor: '#FFF',
+    margin: 20,
+    borderRadius: 30,
+    padding: 25,
+
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+
+  formTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#111',
+    marginBottom: 25,
+  },
+
+  label: {
+    color: '#444',
+    marginBottom: 8,
+    fontWeight: '600',
+  },
+
+  input: {
+    backgroundColor: '#F4F4F4',
+    borderRadius: 15,
+    padding: 15,
+    marginBottom: 20,
+    color: '#111',
+  },
+
+  button: {
+    backgroundColor: '#111',
+    padding: 16,
+    borderRadius: 18,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+
+  buttonText: {
+    color: '#FFF',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+
+  // ===== MEMBERSHIP =====
   membershipCard: {
     backgroundColor: '#111',
     marginHorizontal: 20,
-    marginTop: 15,
-    borderRadius: 28,
+    marginBottom: 40,
+    borderRadius: 30,
     padding: 25,
-  },
-
-  membershipLabel: {
-    color: '#AAA',
-    fontSize: 12,
-    letterSpacing: 2,
   },
 
   membershipTitle: {
     color: '#D4AF37',
-    fontSize: 26,
+    fontSize: 24,
     fontWeight: 'bold',
-    marginTop: 8,
   },
 
   membershipText: {
     color: '#EEE',
     marginTop: 12,
     lineHeight: 24,
-    fontSize: 15,
-  },
-
-  menuContainer: {
-    marginTop: 30,
-    paddingHorizontal: 20,
-  },
-
-  menuItem: {
-    backgroundColor: '#FFF',
-    padding: 18,
-    borderRadius: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 15,
-
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-
-  iconBox: {
-    width: 45,
-    height: 45,
-    backgroundColor: '#F5F5F5',
-    borderRadius: 12,
-
-    justifyContent: 'center',
-    alignItems: 'center',
-
-    marginRight: 15,
-  },
-
-  menuIcon: {
-    fontSize: 20,
-  },
-
-  menuText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#111',
-  },
-
-  promoCard: {
-    backgroundColor: '#D4AF37',
-    margin: 20,
-    borderRadius: 28,
-    padding: 25,
-    marginBottom: 40,
-  },
-
-  promoTitle: {
-    color: '#FFF',
-    fontSize: 26,
-    fontWeight: 'bold',
-  },
-
-  promoText: {
-    color: '#FFF',
-    marginTop: 10,
-    lineHeight: 24,
-    fontSize: 15,
-  },
-
-  promoButton: {
-    backgroundColor: '#111',
-    paddingVertical: 14,
-    borderRadius: 16,
-    marginTop: 25,
-    alignItems: 'center',
-  },
-
-  promoButtonText: {
-    color: '#FFF',
-    fontWeight: 'bold',
-    fontSize: 15,
   },
 
 });
