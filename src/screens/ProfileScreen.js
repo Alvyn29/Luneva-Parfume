@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+import React, {
+  useState,
+  useEffect,
+} from 'react';
 
 import {
   View,
@@ -11,77 +14,169 @@ import {
   Alert,
 } from 'react-native';
 
-import * as ImagePicker from 'expo-image-picker';
+import * as ImagePicker
+from 'expo-image-picker';
+
+import { supabase }
+from '../config/supabase';
 
 export default function ProfileScreen() {
 
-  // ===== STATE =====
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [name, setName] =
+    useState('');
 
-  // ===== PROFILE =====
-  const [profileName, setProfileName] =
-    useState('Luneva Member');
+  const [email, setEmail] =
+    useState('');
 
-  const [profileImage, setProfileImage] =
+  const [password, setPassword] =
+    useState('');
+
+  const [profileName,
+    setProfileName] =
+    useState(
+      'Luneva Member'
+    );
+
+  const [profileImage,
+    setProfileImage] =
     useState(
       'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'
     );
 
-  // ===== PICK IMAGE =====
-  const pickImage = async () => {
+  const [totalProduct,
+    setTotalProduct] =
+    useState(0);
 
-    const result =
-      await ImagePicker.launchImageLibraryAsync({
+  const [totalStock,
+    setTotalStock] =
+    useState(0);
 
-        mediaTypes:
-          ImagePicker.MediaTypeOptions.Images,
+  const [averageRating,
+    setAverageRating] =
+    useState(0);
 
-        allowsEditing: true,
+  useEffect(() => {
 
-        aspect: [1, 1],
+    getStatistics();
 
-        quality: 1,
-      });
+  }, []);
 
-    if (!result.canceled) {
+  const getStatistics =
+    async () => {
 
-      setProfileImage(
-        result.assets[0].uri
+      const {
+        data,
+        error,
+      } = await supabase
+        .from('parfumes')
+        .select('*');
+
+      if (error) {
+
+        console.log(error);
+
+        return;
+      }
+
+      setTotalProduct(
+        data.length
       );
-    }
-  };
 
-  // ===== LOGIN =====
-  const handleLogin = () => {
+      const stockSum =
+        data.reduce(
+          (sum, item) =>
+            sum +
+            Number(
+              item.stock || 0
+            ),
+          0
+        );
 
-    if (!name || !email || !password) {
+      setTotalStock(
+        stockSum
+      );
+
+      const ratingAvg =
+        data.length > 0
+          ? (
+              data.reduce(
+                (sum, item) =>
+                  sum +
+                  Number(
+                    item.rating || 0
+                  ),
+                0
+              ) /
+              data.length
+            ).toFixed(1)
+          : 0;
+
+      setAverageRating(
+        ratingAvg
+      );
+
+    };
+
+  const pickImage =
+    async () => {
+
+      const result =
+        await ImagePicker.launchImageLibraryAsync({
+
+          mediaTypes:
+            ImagePicker.MediaTypeOptions.Images,
+
+          allowsEditing: true,
+
+          aspect: [1, 1],
+
+          quality: 1,
+        });
+
+      if (!result.canceled) {
+
+        setProfileImage(
+          result.assets[0].uri
+        );
+
+      }
+
+    };
+
+  const handleLogin =
+    () => {
+
+      if (
+        !name ||
+        !email ||
+        !password
+      ) {
+
+        Alert.alert(
+          'Warning',
+          'Please fill all form fields.'
+        );
+
+        return;
+      }
+
+      setProfileName(
+        name
+      );
 
       Alert.alert(
-        'Warning',
-        'Please fill all form fields.'
+        'Success',
+        'Welcome to Luneva Parfume ✨'
       );
 
-      return;
-    }
+    };
+      return (
 
-    // UPDATE PROFILE NAME
-    setProfileName(name);
-
-    Alert.alert(
-      'Success',
-      'Welcome to Luneva Parfume ✨'
-    );
-  };
-
-  return (
     <ScrollView
       style={styles.container}
       showsVerticalScrollIndicator={false}
     >
 
-      {/* ===== HEADER ===== */}
       <View style={styles.header}>
 
         <TouchableOpacity
@@ -111,55 +206,46 @@ export default function ProfileScreen() {
 
       </View>
 
-      {/* ===== FORM ===== */}
       <View style={styles.formCard}>
 
         <Text style={styles.formTitle}>
           Member Login
         </Text>
 
-        {/* NAME */}
         <Text style={styles.label}>
           Full Name
         </Text>
 
         <TextInput
           placeholder="Enter your name"
-          placeholderTextColor="#999"
           style={styles.input}
           value={name}
           onChangeText={setName}
         />
 
-        {/* EMAIL */}
         <Text style={styles.label}>
           Email
         </Text>
 
         <TextInput
           placeholder="Enter your email"
-          placeholderTextColor="#999"
           style={styles.input}
           value={email}
           onChangeText={setEmail}
-          keyboardType="email-address"
         />
 
-        {/* PASSWORD */}
         <Text style={styles.label}>
           Password
         </Text>
 
         <TextInput
           placeholder="Enter your password"
-          placeholderTextColor="#999"
           style={styles.input}
           value={password}
           onChangeText={setPassword}
           secureTextEntry
         />
 
-        {/* BUTTON */}
         <TouchableOpacity
           style={styles.button}
           onPress={handleLogin}
@@ -173,7 +259,54 @@ export default function ProfileScreen() {
 
       </View>
 
-      {/* ===== MEMBERSHIP ===== */}
+      <View style={styles.statsCard}>
+
+        <Text style={styles.statsTitle}>
+          Collection Statistics
+        </Text>
+
+        <View style={styles.statRow}>
+
+          <View style={styles.statBox}>
+
+            <Text style={styles.statValue}>
+              {totalProduct}
+            </Text>
+
+            <Text style={styles.statLabel}>
+              Products
+            </Text>
+
+          </View>
+
+          <View style={styles.statBox}>
+
+            <Text style={styles.statValue}>
+              {totalStock}
+            </Text>
+
+            <Text style={styles.statLabel}>
+              Stock
+            </Text>
+
+          </View>
+
+          <View style={styles.statBox}>
+
+            <Text style={styles.statValue}>
+              ⭐ {averageRating}
+            </Text>
+
+            <Text style={styles.statLabel}>
+              Rating
+            </Text>
+
+          </View>
+
+        </View>
+
+      </View>
+
       <View style={styles.membershipCard}>
 
         <Text style={styles.membershipTitle}>
@@ -181,14 +314,15 @@ export default function ProfileScreen() {
         </Text>
 
         <Text style={styles.membershipText}>
-          Get exclusive access to luxury perfume collections
-          and premium member discounts.
+          Get exclusive access to luxury perfume collections and premium member discounts.
         </Text>
 
       </View>
 
     </ScrollView>
+
   );
+
 }
 
 const styles = StyleSheet.create({
@@ -198,7 +332,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8F8F8',
   },
 
-  // ===== HEADER =====
   header: {
     alignItems: 'center',
     marginTop: 50,
@@ -230,7 +363,6 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
 
-  // ===== FORM =====
   formCard: {
     backgroundColor: '#FFF',
     margin: 20,
@@ -246,14 +378,13 @@ const styles = StyleSheet.create({
   formTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#111',
     marginBottom: 25,
   },
 
   label: {
-    color: '#444',
     marginBottom: 8,
     fontWeight: '600',
+    color: '#444',
   },
 
   input: {
@@ -261,7 +392,6 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     padding: 15,
     marginBottom: 20,
-    color: '#111',
   },
 
   button: {
@@ -269,7 +399,6 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 18,
     alignItems: 'center',
-    marginTop: 10,
   },
 
   buttonText: {
@@ -278,7 +407,45 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 
-  // ===== MEMBERSHIP =====
+  statsCard: {
+    backgroundColor: '#FFF',
+    marginHorizontal: 20,
+    borderRadius: 30,
+    padding: 25,
+    marginBottom: 20,
+
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+
+  statsTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+
+  statRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+
+  statBox: {
+    alignItems: 'center',
+  },
+
+  statValue: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#D4AF37',
+  },
+
+  statLabel: {
+    marginTop: 5,
+    color: '#666',
+  },
+
   membershipCard: {
     backgroundColor: '#111',
     marginHorizontal: 20,

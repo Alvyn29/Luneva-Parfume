@@ -4,24 +4,21 @@ import React, {
 } from 'react';
 
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
   FlatList,
   Image,
   StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+  ScrollView,
 } from 'react-native';
 
-import axios from 'axios';
+import { supabase }
+from '../config/supabase';
 
 export default function ApiScreen() {
 
-  // GANTI DENGAN LINK MOCKAPI KAMU
-  const API =
-    'https://6a12f33078d0434e0d5da850.mockapi.io/Parfume';
-
-  // ===== STATE =====
   const [data, setData] =
     useState([]);
 
@@ -34,53 +31,90 @@ export default function ApiScreen() {
   const [image, setImage] =
     useState('');
 
+  const [category, setCategory] =
+    useState('');
+
+  const [description, setDescription] =
+    useState('');
+
+  const [stock, setStock] =
+    useState('');
+
+  const [volume, setVolume] =
+    useState('');
+
+  const [rating, setRating] =
+    useState('');
+
   const [editId, setEditId] =
     useState(null);
 
-  // ===== GET =====
-  const getData = async () => {
-
-    try {
-
-      const response =
-        await axios.get(API);
-
-      setData(response.data);
-
-    } catch (error) {
-
-      console.log(error);
-    }
-  };
-
-  // ===== LOAD =====
   useEffect(() => {
 
     getData();
 
   }, []);
 
+  // ===== GET =====
+  const getData = async () => {
+
+    const { data, error } =
+      await supabase
+        .from('parfumes')
+        .select('*')
+        .order('id');
+
+    if (error) {
+
+      console.log(error);
+
+    } else {
+
+      setData(data);
+
+    }
+
+  };
+
   // ===== ADD =====
   const addData = async () => {
 
-    try {
+    const { error } =
+      await supabase
+        .from('parfumes')
+        .insert([
+          {
+            name,
+            price,
+            image,
+            category,
+            description,
+            stock: parseInt(stock),
+            volume,
+            rating: parseFloat(rating),
+            
+          },
+        ]);
 
-      await axios.post(API, {
-        name,
-        price,
-        image,
-      });
+    if (error) {
+
+      console.log(error);
+
+    } else {
 
       getData();
 
       setName('');
       setPrice('');
       setImage('');
+      setCategory('');
+      setDescription('');
+      setStock('');
+      setVolume('');
+      setRating('');
 
-    } catch (error) {
-
-      console.log(error);
     }
+
   };
 
   // ===== EDIT =====
@@ -93,21 +127,49 @@ export default function ApiScreen() {
     setPrice(item.price);
 
     setImage(item.image);
-  };
 
-  // ===== UPDATE =====
+    setCategory(item.category);
+
+    setDescription(
+      item.description
+    );
+
+    setStock(
+      item.stock?.toString()
+    );
+
+    setVolume(
+      item.volume
+    );
+
+    setRating(
+      item.rating?.toString()
+    );
+
+  };
+    // ===== UPDATE =====
   const updateData = async () => {
 
-    try {
-
-      await axios.put(
-        `${API}/${editId}`,
-        {
+    const { error } =
+      await supabase
+        .from('parfumes')
+        .update({
           name,
           price,
           image,
-        }
-      );
+          category,
+          description,
+          stock: parseInt(stock),
+          volume,
+          rating: parseFloat(rating),
+        })
+        .eq('id', editId);
+
+    if (error) {
+
+      console.log(error);
+
+    } else {
 
       getData();
 
@@ -116,40 +178,47 @@ export default function ApiScreen() {
       setName('');
       setPrice('');
       setImage('');
+      setCategory('');
+      setDescription('');
+      setStock('');
+      setVolume('');
+      setRating('');
 
-    } catch (error) {
-
-      console.log(error);
     }
+
   };
 
   // ===== DELETE =====
   const deleteData = async (id) => {
 
-    try {
+    const { error } =
+      await supabase
+        .from('parfumes')
+        .delete()
+        .eq('id', id);
 
-      await axios.delete(
-        `${API}/${id}`
-      );
+    if (error) {
+
+      console.log(error);
+
+    } else {
 
       getData();
 
-    } catch (error) {
-
-      console.log(error);
     }
+
   };
 
   return (
-    <View style={styles.container}>
+
+    <ScrollView style={styles.container}>
 
       <Text style={styles.title}>
-        Luneva Parfume
+        Luneva Collection
       </Text>
 
-      {/* INPUT */}
       <TextInput
-        placeholder="Name"
+        placeholder="Product Name"
         style={styles.input}
         value={name}
         onChangeText={setName}
@@ -169,7 +238,41 @@ export default function ApiScreen() {
         onChangeText={setImage}
       />
 
-      {/* BUTTON */}
+      <TextInput
+        placeholder="Category"
+        style={styles.input}
+        value={category}
+        onChangeText={setCategory}
+      />
+
+      <TextInput
+        placeholder="Description"
+        style={styles.input}
+        value={description}
+        onChangeText={setDescription}
+      />
+
+      <TextInput
+        placeholder="Stock"
+        style={styles.input}
+        value={stock}
+        onChangeText={setStock}
+      />
+
+      <TextInput
+        placeholder="Volume"
+        style={styles.input}
+        value={volume}
+        onChangeText={setVolume}
+      />
+
+      <TextInput
+        placeholder="Rating"
+        style={styles.input}
+        value={rating}
+        onChangeText={setRating}
+      />
+
       <TouchableOpacity
         style={styles.button}
         onPress={
@@ -178,27 +281,30 @@ export default function ApiScreen() {
             : addData
         }
       >
-
         <Text style={styles.buttonText}>
-          {editId ? 'Update' : 'Add'}
+          {editId
+            ? 'Update Product'
+            : 'Add Product'}
         </Text>
-
       </TouchableOpacity>
 
-      {/* DATA */}
       <FlatList
         data={data}
+        scrollEnabled={false}
         keyExtractor={(item) =>
           item.id.toString()
         }
-
         renderItem={({ item }) => (
 
           <View style={styles.card}>
 
             <Image
               source={{
-                uri: item.image,
+                uri:
+                  item.image &&
+                  item.image.length > 0
+                    ? item.image
+                    : 'https://via.placeholder.com/300',
               }}
               style={styles.image}
             />
@@ -213,6 +319,22 @@ export default function ApiScreen() {
                 {item.price}
               </Text>
 
+              <Text>
+                Category: {item.category}
+              </Text>
+
+              <Text>
+                Stock: {item.stock}
+              </Text>
+
+              <Text>
+                Volume: {item.volume}
+              </Text>
+
+              <Text>
+                Rating: ⭐ {item.rating}
+              </Text>
+
               <View style={styles.row}>
 
                 <TouchableOpacity
@@ -221,11 +343,9 @@ export default function ApiScreen() {
                     editData(item)
                   }
                 >
-
                   <Text style={styles.actionText}>
                     Edit
                   </Text>
-
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -234,11 +354,9 @@ export default function ApiScreen() {
                     deleteData(item.id)
                   }
                 >
-
                   <Text style={styles.actionText}>
                     Delete
                   </Text>
-
                 </TouchableOpacity>
 
               </View>
@@ -250,38 +368,40 @@ export default function ApiScreen() {
         )}
       />
 
-    </View>
+    </ScrollView>
+
   );
+
 }
 
 const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: '#FFF',
+    padding: 20,
   },
 
   title: {
-    fontSize: 26,
+    fontSize: 28,
     fontWeight: 'bold',
+    textAlign: 'center',
     marginTop: 50,
     marginBottom: 20,
-    textAlign: 'center',
   },
 
   input: {
     borderWidth: 1,
     borderColor: '#DDD',
-    borderRadius: 10,
+    borderRadius: 12,
     padding: 12,
-    marginBottom: 12,
+    marginBottom: 10,
   },
 
   button: {
     backgroundColor: '#111',
-    padding: 14,
-    borderRadius: 10,
+    padding: 15,
+    borderRadius: 12,
     alignItems: 'center',
     marginBottom: 20,
   },
@@ -294,14 +414,14 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     backgroundColor: '#F5F5F5',
-    borderRadius: 12,
+    borderRadius: 15,
     marginBottom: 15,
     overflow: 'hidden',
   },
 
   image: {
-    width: 100,
-    height: 100,
+    width: 110,
+    height: 110,
   },
 
   content: {
@@ -316,8 +436,8 @@ const styles = StyleSheet.create({
 
   price: {
     color: '#D4AF37',
-    marginTop: 5,
     fontWeight: 'bold',
+    marginVertical: 5,
   },
 
   row: {
@@ -327,16 +447,16 @@ const styles = StyleSheet.create({
 
   editButton: {
     backgroundColor: '#D4AF37',
-    paddingVertical: 5,
     paddingHorizontal: 15,
+    paddingVertical: 6,
     borderRadius: 8,
     marginRight: 10,
   },
 
   deleteButton: {
     backgroundColor: '#C0392B',
-    paddingVertical: 5,
     paddingHorizontal: 15,
+    paddingVertical: 6,
     borderRadius: 8,
   },
 

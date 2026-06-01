@@ -11,52 +11,78 @@ import {
   Animated,
 } from 'react-native';
 
-import axios from 'axios';
+import {
+  useFocusEffect,
+} from '@react-navigation/native';
 
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView }
+from 'react-native-safe-area-context';
 
-import ProductCard from '../components/ProductCard';
+import { supabase }
+from '../config/supabase';
 
-export default function HomeScreen({ navigation }) {
+import ProductCard
+from '../components/ProductCard';
 
-  // ===== API =====
-  const API =
-    'https://6a12f33078d0434e0d5da850.mockapi.io/Parfume';
+export default function HomeScreen({
+  navigation,
+}) {
 
-  const [apiProducts, setApiProducts] =
+  const [supabaseProducts,
+    setSupabaseProducts] =
     useState([]);
 
-  // ===== GET API =====
-  const getApiProducts = async () => {
+  const getProducts =
+    async () => {
 
-    try {
+      const {
+        data,
+        error,
+      } = await supabase
+        .from('parfumes')
+        .select('*');
 
-      const response =
-        await axios.get(API);
+      if (error) {
 
-      setApiProducts(response.data);
+        console.log(error);
 
-    } catch (error) {
+      } else {
 
-      console.log(error);
-    }
-  };
+        setSupabaseProducts(
+          data
+        );
+
+      }
+
+    };
 
   useEffect(() => {
 
-    getApiProducts();
+    getProducts();
 
   }, []);
 
-  // ===== ANIMATION =====
-  const scrollY =
-    useRef(new Animated.Value(0)).current;
+  useFocusEffect(
 
-  const logoScale = scrollY.interpolate({
-    inputRange: [0, 120],
-    outputRange: [1, 0.8],
-    extrapolate: 'clamp',
-  });
+    React.useCallback(() => {
+
+      getProducts();
+
+    }, [])
+
+  );
+
+  const scrollY =
+    useRef(
+      new Animated.Value(0)
+    ).current;
+
+  const logoScale =
+    scrollY.interpolate({
+      inputRange: [0, 120],
+      outputRange: [1, 0.8],
+      extrapolate: 'clamp',
+    });
 
   const taglineOpacity =
     scrollY.interpolate({
@@ -79,7 +105,6 @@ export default function HomeScreen({ navigation }) {
       extrapolate: 'clamp',
     });
 
-  // ===== DEFAULT PRODUCT =====
   const defaultProducts = [
 
     {
@@ -124,16 +149,47 @@ export default function HomeScreen({ navigation }) {
 
   ];
 
-  // ===== COMBINE PRODUCT =====
   const products = [
-    ...defaultProducts,
-    ...apiProducts,
-  ];
 
+    ...defaultProducts,
+
+    ...supabaseProducts.map(
+      item => ({
+
+        id:
+          item.id.toString(),
+
+        name:
+          item.name,
+
+        price:
+          item.price,
+
+        image:
+          item.image,
+
+        category:
+          item.category,
+
+        description:
+          item.description,
+
+        stock:
+          item.stock,
+
+        volume:
+          item.volume,
+
+        rating:
+          item.rating,
+
+      })
+    ),
+
+  ];
     return (
     <SafeAreaView style={styles.container}>
 
-      {/* ===== HEADER ===== */}
       <View style={styles.header}>
 
         <Animated.Text
@@ -141,7 +197,10 @@ export default function HomeScreen({ navigation }) {
             styles.brand,
             {
               transform: [
-                { scale: logoScale },
+                {
+                  scale:
+                    logoScale,
+                },
               ],
             },
           ]}
@@ -163,7 +222,6 @@ export default function HomeScreen({ navigation }) {
 
       </View>
 
-      {/* ===== CONTENT ===== */}
       <Animated.ScrollView
         showsVerticalScrollIndicator={false}
 
@@ -190,7 +248,6 @@ export default function HomeScreen({ navigation }) {
         scrollEventThrottle={16}
       >
 
-        {/* ===== BANNER ===== */}
         <Animated.Image
           source={{
             uri:
@@ -213,14 +270,17 @@ export default function HomeScreen({ navigation }) {
           ]}
         />
 
-        {/* ===== TITLE ===== */}
-        <Text style={styles.sectionTitle}>
+        <Text
+          style={
+            styles.sectionTitle
+          }
+        >
           Best Seller
         </Text>
 
-        {/* ===== PRODUCT ===== */}
         <Animated.ScrollView
           horizontal
+
           showsHorizontalScrollIndicator={
             false
           }
@@ -231,15 +291,19 @@ export default function HomeScreen({ navigation }) {
           }}
         >
 
-          {products.map((item) => (
+          {products.map(
+            (item) => (
 
-            <ProductCard
-              key={item.id}
-              item={item}
-              navigation={navigation}
-            />
+              <ProductCard
+                key={item.id}
+                item={item}
+                navigation={
+                  navigation
+                }
+              />
 
-          ))}
+            )
+          )}
 
         </Animated.ScrollView>
 
@@ -247,16 +311,18 @@ export default function HomeScreen({ navigation }) {
 
     </SafeAreaView>
   );
+
 }
 
-const styles = StyleSheet.create({
+const styles =
+StyleSheet.create({
 
   container: {
     flex: 1,
-    backgroundColor: '#F8F8F8',
+    backgroundColor:
+      '#F8F8F8',
   },
 
-  // ===== HEADER =====
   header: {
     position: 'absolute',
 
@@ -284,7 +350,6 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
 
-  // ===== BRAND =====
   brand: {
     fontSize: 32,
     fontWeight: 'bold',
@@ -292,7 +357,6 @@ const styles = StyleSheet.create({
     color: '#111',
   },
 
-  // ===== TAGLINE =====
   tagline: {
     color: '#888',
     marginTop: 5,
@@ -300,7 +364,6 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
 
-  // ===== BANNER =====
   banner: {
     width: '90%',
     height: 240,
@@ -308,7 +371,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 
-  // ===== SECTION =====
   sectionTitle: {
     fontSize: 24,
     fontWeight: 'bold',
